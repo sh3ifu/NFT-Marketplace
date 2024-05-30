@@ -1,5 +1,7 @@
-.mainArea {
-    padding: 5%;
-    display: flex;
-    /* justify-content: space-between; */
+.mainArea {    
+    margin-top: 5%;
+    margin-left: 3%;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */    
+    padding: 16px; /* Padding around the grid */
 }

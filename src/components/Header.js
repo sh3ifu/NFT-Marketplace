@@ -15,7 +15,7 @@ const FormData = require("form-data");
 const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
 
 
-function Header() {
+function Header({ onNewNft }) {
     const defaultImageURL = 'https://crimson-cheerful-eagle-290.mypinata.cloud/ipfs/bafybeiddt7fzfxjgort2s7tpue576p2fogr3a5aiu7qfjbdllaqajjprhu';
     const [account, setAccount] = useState(null);
     const [provider, setProvider] = useState(null);
@@ -76,12 +76,12 @@ function Header() {
     }
 
     async function mintNft() {
-        // const fileUrl = await uploadImage();
+        const fileUrl = await uploadImage();
         let signer = null;
 
         // Try to connect metamask
         try {
-            signer = await provider.getSigner();            
+            signer = await provider.getSigner();
         } catch(err) {
             alert('Please connect to Metamask');            
             console.log(err);
@@ -99,15 +99,16 @@ function Header() {
             return;
         }
 
-        const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, signer);     
+        const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, signer);
         
         // Try to mint a token
         try {
             setIsOpenProcessModal(true);
             setIsOpen(false);
-            await contract.mintToken(convertedPrice, 'https://crimson-cheerful-eagle-290.mypinata.cloud/ipfs/bafybeiddt7fzfxjgort2s7tpue576p2fogr3a5aiu7qfjbdllaqajjprhu');
+            await contract.mintToken(convertedPrice, fileUrl);
             setIsOpenProcessModal(false);
             setIsOpenCompletedModal(true);
+            onNewNft();
         } catch(err) {
             setIsOpen(false);
             setIsOpenProcessModal(false);
@@ -125,7 +126,8 @@ function Header() {
         try {
             setProvider(new ethers.BrowserProvider(window.ethereum));
             const accounts = await provider.send('eth_requestAccounts', []);
-            setAccount(accounts[0]);
+            const shortAddress = accounts[0].slice(0, 4) + '...' + accounts[0].slice(-3);
+            setAccount(shortAddress);
         } catch (error) {
             alert('Error connecting to MetaMask');
         }
