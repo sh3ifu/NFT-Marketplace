@@ -1,0 +1,55 @@
+.block {
+    width:4in;
+    height:5in;
+    background-color: #2e323d;
+    border-radius: 12px;
+    margin: 20px;
+}
+
+img {
+    margin-top: 20px;
+    margin-left: 20px;
+    margin-right: 20px;
+    width: 330px;
+    height: 280px;
+    border-radius: 12px;
+}
+
+p {
+    color: #979797;
+    font-size: 17px;
+}
+
+.buyButton {
+    margin-top: 10%;
+    align-items: center;
+    background-color: #595E60;
+    border-radius: 12px;
+    box-shadow: transparent 0 0 0 3px,rgba(128, 128, 128, .1) 0 6px 20px;
+    box-sizing: border-box;  
+    cursor: pointer;
+    display: inline-flex;
+    width: 150px;
+    height: 40px;
+    font-family: Inter,sans-serif;
+    font-size: 1.35rem;
+    font-weight: 700;
+    justify-content: center;
+    line-height: 1;
+    margin: 0;
+    outline: none;
+    padding: 1rem 1.2rem;
+    /* text-align: center; */
+    /* text-decoration: none; */
+    transition: box-shadow .2s,-webkit-box-shadow .2s;
+    white-space: nowrap;
+    border: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    color: #00e8c6;
+  }
+  
+  .buyButton:hover {
+    box-shadow: #979797 0 0 0 3px, transparent 0 0 0 0;
+  }
