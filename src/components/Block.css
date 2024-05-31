@@ -1,9 +1,13 @@
 .block {
-    width:350px;
-    height:450px;
+    width: 350px;
+    height: 450px;
     background-color: #2e323d;
     border-radius: 12px;
     margin: 20px;
+    position: relative;
+}
+.block:hover {
+  cursor: pointer;
 }
 
 img {
@@ -15,16 +19,16 @@ img {
     border-radius: 12px;
 }
 
-p {
+#tokenId {
     color: #979797;
-    font-size: 17px;
+    font-size: 14px;
+    margin-top: 5px;
 }
 
 .buyButton {
-    margin-top: 10%;
     align-items: center;
     background-color: #595E60;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: transparent 0 0 0 3px,rgba(128, 128, 128, .1) 0 6px 20px;
     box-sizing: border-box;  
     cursor: pointer;
@@ -46,13 +50,42 @@ p {
     -webkit-user-select: none;
     touch-action: manipulation;
     color: #00e8c6;
-    margin-top: 20px;
-  }
+    margin-top: 70px;
+}
   
-  .buyButton:hover {
-    box-shadow: #979797 0 0 0 3px, transparent 0 0 0 0;
-  }
+.buyButton:hover {
+  box-shadow: #979797 0 0 0 3px, transparent 0 0 0 0;
+}
 
-  #nftPrice {
-    color: white;
-  }
+#tokenName {
+  font-size: 20px;
+  color: white;
+  display: flex;
+  flex-flow: row wrap;
+  margin-left: 20px;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.bottomBlock {
+  display: flex;
+  justify-content: space-between;
+  padding-left: 20px;
+  padding-right: 20px;
+  position: absolute;
+  bottom: -0px;
+  left: 0;
+  right: 0;  
+}
+
+#tokenPrice {
+  margin-top: 80px;
+  font-size: 20px;
+  color: white;
+}
+
+#description {  
+  margin-top: 5px;
+  color: #979797;
+  margin-bottom: 0;
+}

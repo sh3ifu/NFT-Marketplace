@@ -13,9 +13,18 @@ const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
 
 function Block(props) {
     const [isOpen, setIsOpen] = useState(false);
+    const [isOpenAdditionalModal, setIsOpenAdditionalModal] = useState(false);
     const [isOpenProcessModal, setIsOpenProcessModal] = useState(false);
     const [isOpenFailedModal, setIsOpenFailedModal] = useState(false);
     const [isOpenCompletedModal, setIsOpenCompletedModal] = useState(false);
+
+    function truncateDescription(description, maxLength) {
+        if (description.length > maxLength) {
+            return description.substring(0, maxLength) + '...';
+        } else {
+            return description;
+        }
+    }
 
     async function buy() {
         const provider = new ethers.BrowserProvider(window.ethereum);
@@ -34,6 +43,14 @@ function Block(props) {
             console.log(err);
         }
     }
+
+    const handleClick = () => {
+        setIsOpenAdditionalModal(true);
+    };
+    const handleBuyClick = async (e) => {
+        e.stopPropagation();
+        buy()
+    };
 
     return(
         <>
@@ -58,14 +75,25 @@ function Block(props) {
                 <p id="completedMessage">Buying completed</p>
             </div>
         </Modal>
+        <Modal open={isOpenAdditionalModal} footer={null} onCancel={() => setIsOpen(setIsOpenAdditionalModal)} title="NFT Info" className="additional-modal">
+            <div className="additional">
+                
+            </div>
+        </Modal>
         
-        <div className="block">            
+        <div className="block" onClick={handleClick}>            
             <img src={props.imageUrl}></img>
             <div className='nftInfo'>
-                <p>Token ID #{props.tokenID}</p>
-                <p id='nftPrice'>{props.price} ETH</p>
-            </div>            
-            <button className='buyButton' onClick={buy}>Buy</button>
+                <p id="tokenId">Token ID #{props.tokenID}</p>
+                <p id="tokenName">{props.name}</p>
+                <p id="description">{truncateDescription(props.description, 80)}</p>
+            </div>
+            {props.view === 'Market' && (
+                <div className="bottomBlock">                
+                    <p id='tokenPrice'>{props.price} ETH</p>
+                    <button className='buyButton' onClick={handleBuyClick}>Buy</button>
+                </div>
+            )}
         </div>
         </>
     );    

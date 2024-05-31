@@ -27,6 +27,9 @@ function Header({ onNewNft, setView }) {
     const [file, setFile] = useState(defaultImageURL);
     const [filePreview, setFilePreview] = useState(defaultImageURL);
     const [price, setPrice] = useState('');
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
     
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
@@ -42,6 +45,9 @@ function Header({ onNewNft, setView }) {
         }
     };
     const handlePriceChange = (e) => setPrice(e.target.value);
+    const handleNameChange = (e) => setName(e.target.value);
+    const handleDescriptionChange = (e) => setDescription(e.target.value);
+
 
     useEffect(() => {
         if(checkMetamask()) 
@@ -76,9 +82,36 @@ function Header({ onNewNft, setView }) {
         }
     }
 
+    async function uploadJSON(name, description, image) {
+        try {
+            const jsonData = {
+                name: name,
+                description: description,
+                image: image
+            };
+    
+            const jsonBlob = new Blob([JSON.stringify(jsonData)], { type: "application/json" });
+    
+            const formData = new FormData();
+            formData.append("file", jsonBlob, name + '.json');
+    
+            const response = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                    pinata_api_key: process.env.REACT_APP_PINATA_API_KEY,
+                    pinata_secret_api_key: process.env.REACT_APP_PINATA_SECRET_API_KEY
+                }
+            });
+    
+            const jsonUrl = "https://gateway.pinata.cloud/ipfs/" + response.data.IpfsHash;
+            return jsonUrl;
+        } catch (error) {
+            console.error("Error uploading JSON to IPFS:", error);
+        }
+    }
+
     async function mintNft() {
-        const fileUrl = await uploadImage();
-        let signer = null;
+        let signer = null;        
 
         // Try to connect metamask
         try {
@@ -104,9 +137,13 @@ function Header({ onNewNft, setView }) {
         
         // Try to mint a token
         try {
+            setIsUploading(true);
             setIsOpenProcessModal(true);
+            const imageUrl = await uploadImage();
+            const metadataURL = await uploadJSON(name, description, imageUrl);
+            setIsUploading(false);
             setIsOpen(false);
-            await contract.mintToken(convertedPrice, fileUrl);
+            await contract.mintToken(convertedPrice, metadataURL);
             setIsOpenProcessModal(false);
             setIsOpenCompletedModal(true);
             onNewNft();
@@ -146,6 +183,11 @@ function Header({ onNewNft, setView }) {
     }
 
     function openModal() {        
+        setName('');
+        setDescription('');
+        setPrice('');
+        setFilePreview(defaultImageURL);
+        setFile(defaultImageURL);
         setIsOpen(true);
     }
 
@@ -157,6 +199,14 @@ function Header({ onNewNft, setView }) {
                 <div className="fileUpload">
                     <label>Upload File:</label>
                     <input className="selectFile" type="file" onChange={handleFileChange} accept=".png, .jpg, .jpeg, .webp, .gif"/>
+                </div>
+                <div className="inputName">
+                    <label>Name:</label>
+                    <input id="inputName" value={name} placeholder="Token name" onChange={handleNameChange} />
+                </div>
+                <div className="inputDescription">
+                    <label>Description:</label>
+                    <textarea id="inputDescription" value={description} placeholder="Description" onChange={handleDescriptionChange} />
                 </div>
                 <div className="inputPrice">
                     <label>Price (ETH):</label>
@@ -172,7 +222,7 @@ function Header({ onNewNft, setView }) {
                     <img id="loadingImg" src={Loading}></img>
                     <p>Processing...</p>
                 </div>
-                <p id="processMessage">Initializing transaction...</p>
+                <p id="processMessage">{isUploading ? 'Uploading to IPFS...' : 'Initializing transaction...'}</p>
             </div>
         </Modal>
         <Modal open={isOpenFailedModal} footer={null} onCancel={() => setIsOpen(setIsOpenFailedModal)} className="failed-modal">
@@ -197,12 +247,12 @@ function Header({ onNewNft, setView }) {
                 <Flex vertical gap="middle">
                     <Radio.Group defaultValue="a" buttonStyle="solid">
                         <Radio.Button value="a" onClick={() => setView('Market')}>Market</Radio.Button>
-                        <Radio.Button value="b" onClick={() => setView('My NFT')}>My NFT</Radio.Button>                        
+                        <Radio.Button value="b" onClick={() => setView('My NFT')}>My NFT</Radio.Button>
                     </Radio.Group>
                 </Flex>
             </div>
             <div className="rightButtons">
-                <button className="connectBtn" onClick={() => openModal(1)}>Create</button>                
+                <button className="connectBtn" onClick={() => openModal(1)}>Create</button>
                 <button className="connectBtn" onClick={requestAccount}>{account ? account : 'Connect'}</button>
             </div>
         </div>

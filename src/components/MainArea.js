@@ -1,4 +1,5 @@
 import jsonData from "./deployedContractsAddresses.json";
+import axios from 'axios';
 import './MainArea.css';
 import Block from './Block';
 import { ethers } from "ethers";
@@ -15,7 +16,6 @@ function MainArea({ view, newNftAdded }) {
     const [nfts, setNfts] = useState([]);
     
     async function fetchData() {
-        console.log(view);
         const provider = new ethers.BrowserProvider(window.ethereum);
         const wallet = new ethers.Wallet(deploymentPrivateKey, provider);
 
@@ -42,9 +42,17 @@ function MainArea({ view, newNftAdded }) {
             const tokenID = id;
             const tokenURI = await contract.getTokenURI(tokenID);
             const price = await contract.getPrice(tokenID);
+            
+            const response = await axios.get(tokenURI);
+            const jsonData = response.data;
+            const imageUrl = jsonData.image;
+            const name = jsonData.name;
+            const description = jsonData.description;
 
             nftData.push({
-                imageUrl: tokenURI,
+                name: name,
+                imageUrl: imageUrl,
+                description: description,
                 tokenID: tokenID.toString(),
                 price: ethers.formatEther(String(price))
             });
@@ -116,7 +124,7 @@ function MainArea({ view, newNftAdded }) {
                 )}
 
                 {nfts.map((nft, index) => (
-                    <Block key={index} imageUrl={nft.imageUrl} tokenID={nft.tokenID} price={nft.price} onUpdateNfts={fetchData} />
+                    <Block key={index} imageUrl={nft.imageUrl} tokenID={nft.tokenID} price={nft.price} name={nft.name} description={nft.description} view={view} onUpdateNfts={fetchData} />
                 ))}
             </div>
         </div>

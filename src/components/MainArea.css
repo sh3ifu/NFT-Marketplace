@@ -9,8 +9,8 @@
 .topArea {
     display: flex;
     justify-content: flex-end;
+    /* justify-content: space-between; */
     margin-right: 4%;
-    margin-left: 1%;
     padding: 16px;
 }
 
