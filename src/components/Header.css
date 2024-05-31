@@ -3,7 +3,7 @@
     display: flex; 
     justify-content: space-between;
     align-items: center;
-    margin-left: 7%;
+    margin-left: 5%;
     margin-right: 3%;
 }
 
@@ -12,24 +12,7 @@ h1 {
   color: #00e8c6;
 }
 
-#myNFTButton, #marketButton {  
-  /* align-items: center;
-  box-sizing: border-box;    
-  display: inline-flex;
-  font-family: Inter,sans-serif;  
-  justify-content: center;
-  line-height: 1;
-  margin: 0;
-  outline: none;
-  padding: 1rem 1.2rem;
-  text-align: center;
-  text-decoration: none;
-  transition: box-shadow .2s,-webkit-box-shadow .2s;
-  white-space: nowrap;  
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: manipulation; */
-
+#myNFTButton, #marketButton {
   cursor: pointer;
   margin-right: 25px;
   border: none;
@@ -37,6 +20,15 @@ h1 {
   color: #00e8c6;
   font-size: 1.35rem;
   font-weight: 700;
+}
+
+.leftBlock {
+  display: flex;
+}
+.leftBlock img {
+  width: 55px;
+  height: 55px;
+  margin-right: 30px;
 }
 
 .middleBlock{

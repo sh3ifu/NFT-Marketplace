@@ -3,21 +3,39 @@ import './MainArea.css';
 import Block from './Block';
 import { ethers } from "ethers";
 import { useState, useEffect } from 'react';
+import { DownOutlined} from '@ant-design/icons';
+import { Dropdown, Button, Space, message } from "antd";
+import Sad from '../assets/sad.png';
 import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
 const deploymentPrivateKey = jsonData.deploymentPrivateKey;
 
-function MainArea({ newNftAdded }) {
+function MainArea({ view, newNftAdded }) {
     const [nfts, setNfts] = useState([]);
     
     async function fetchData() {
+        console.log(view);
         const provider = new ethers.BrowserProvider(window.ethereum);
         const wallet = new ethers.Wallet(deploymentPrivateKey, provider);
 
-        const nftIds = await getUnsoldNftIds(wallet);
         const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
         
+        let nftIds = [];
+        if (view === 'Market') {
+            nftIds = await getUnsoldNftIds(wallet);
+        } else if (view === 'My NFT') {
+            let signer = null;
+            try {
+                signer = await provider.getSigner();
+            } catch(err) {
+                alert('Error connecting to Metamask');
+                console.log(err);
+                return;
+            }
+            nftIds = await contract.getUserItems(signer.address);
+        }
+
         const nftData = [];
 
         for (let id of nftIds) {
@@ -37,7 +55,7 @@ function MainArea({ newNftAdded }) {
 
     useEffect(() => {
         fetchData();
-    }, [newNftAdded]);
+    }, [view, newNftAdded]);
 
     async function getUnsoldNftIds(wallet) {
         const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
@@ -46,11 +64,61 @@ function MainArea({ newNftAdded }) {
         return nftIds;
     }
 
+    const handleMenuClick = (e) => {
+        let sortedNfts = [...nfts];
+        if (e.key === '1') {
+            sortedNfts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+            message.info({content: 'Sorted by price high to low', className: 'custom-message',});
+        } else {
+            sortedNfts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            message.info({content: 'Sorted by price low to high', className: 'custom-message',});
+        }
+        setNfts(sortedNfts);
+    };
+      
+    const items = [
+        {
+          label: 'Price high to low',
+          key: '1',
+        },
+        {
+          label: 'Price low to high',
+          key: '2',
+        },
+    ];
+
+    const menuProps = {
+        items,
+        onClick: handleMenuClick,
+    };
+
     return(
         <div className="mainArea">
-            {nfts.map((nft, index) => (
-                <Block key={index} imageUrl={nft.imageUrl} tokenID={nft.tokenID} price={nft.price} onUpdateNfts={fetchData} />
-            ))}
+             <div className="topArea">
+                {(nfts.length > 0) && (
+                    <Dropdown menu={menuProps} overlayClassName="custom-dropdown">
+                        <Button className="sorting-button">
+                            <Space>
+                                Sorting
+                                <DownOutlined />
+                            </Space>
+                        </Button>
+                    </Dropdown>
+                )}
+            </div>            
+
+            <div className="bottomArea">
+                {nfts.length === 0 && (
+                    <div className="no-nfts">
+                        <p>Nothing here</p>
+                        <img src={Sad} alt="No NFTs" />
+                    </div>
+                )}
+
+                {nfts.map((nft, index) => (
+                    <Block key={index} imageUrl={nft.imageUrl} tokenID={nft.tokenID} price={nft.price} onUpdateNfts={fetchData} />
+                ))}
+            </div>
         </div>
     );    
 }

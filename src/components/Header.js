@@ -8,6 +8,7 @@ import './Modal.css';
 import Failed from "../assets/failed.png";
 import Loading from "../assets/loading.png";
 import Completed from "../assets/completed.png";
+import Nft from "../assets/nft.png";
 import NFTMarketplace from "../artifacts/contracts/NFTMarketplace.sol/NFTMarketplace.json";
 
 const FormData = require("form-data");
@@ -15,7 +16,7 @@ const FormData = require("form-data");
 const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
 
 
-function Header({ onNewNft }) {
+function Header({ onNewNft, setView }) {
     const defaultImageURL = 'https://crimson-cheerful-eagle-290.mypinata.cloud/ipfs/bafybeiddt7fzfxjgort2s7tpue576p2fogr3a5aiu7qfjbdllaqajjprhu';
     const [account, setAccount] = useState(null);
     const [provider, setProvider] = useState(null);
@@ -135,7 +136,8 @@ function Header({ onNewNft }) {
 
     // Account change event handler
     function handleAccountsChanged(accounts) {
-        setAccount(accounts[0]);
+        const shortAddress = accounts[0].slice(0, 4) + '...' + accounts[0].slice(-3);
+        setAccount(shortAddress);
     }
 
     function checkMetamask() {
@@ -187,10 +189,13 @@ function Header({ onNewNft }) {
         </Modal>
 
         <div className="header">
-            <h1>NFT Marketplace</h1>
+            <div className="leftBlock">
+                <img src={Nft}></img>
+                <h1>NFT Marketplace</h1>
+            </div>
             <div className="middleBlock">
-                <button id='marketButton'>Market</button>
-                <button id='myNFTButton'>My NFT</button>
+                <button id='marketButton' onClick={() => setView('Market')}>Market</button>
+                <button id='myNFTButton' onClick={() => setView('My NFT')}>My NFT</button>
             </div>
             <div className="rightButtons">
                 <button className="connectBtn" onClick={() => openModal(1)}>Create</button>                

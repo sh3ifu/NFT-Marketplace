@@ -1,7 +1,71 @@
-.mainArea {    
+
+.mainArea {
     margin-top: 5%;
     margin-left: 3%;
+    display: flex;
+    flex-direction: column;
+}
+
+.topArea {
+    display: flex;
+    justify-content: flex-end;
+    margin-right: 4%;
+    margin-left: 1%;
+    padding: 16px;
+}
+
+.bottomArea {
     display: grid;
-    grid-template-columns: repeat(4, 1fr); /* 4 columns */    
-    padding: 16px; /* Padding around the grid */
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    width: 100%;
+}
+
+.no-nfts {
+    justify-content: center;
+    text-align: center;
+    margin-top: 0px;
+    margin-left: 700px;
+}
+
+.no-nfts p {
+    font-size: 40px;
+    margin-bottom: 80px;
+}
+
+
+.custom-dropdown .ant-dropdown-menu {
+    background-color: #2e323d;
+}
+
+.custom-dropdown .ant-dropdown-menu-item {
+    background-color: #2e323d;
+    color: #00e8c6 !important;
+    font-size: 16px !important;
+}
+
+.custom-dropdown .ant-dropdown-menu-item:hover {
+    background-color: #979797 !important;
+    color: black !important;
+}
+
+/* Custom styles for the sorting button */
+.sorting-button {
+    background-color: #2e323d;
+    color: #00e8c6;
+    border: none;
+    font-size: 18px;
+}
+
+.sorting-button:hover,
+.sorting-button:focus {
+    background-color: #1f1f1f !important;
+    color: #00e8c6 !important;
+}
+
+
+.custom-message .ant-message-notice-content {
+    background-color: #2e323d !important;
+    font-size: 17px !important;
+    color: #00e8c6;
 }

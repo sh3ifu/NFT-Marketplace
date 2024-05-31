@@ -16,6 +16,7 @@ contract NFTMarketplace {
     MyToken mytoken;
     address owner;
     uint minimumPrice = 0.001 ether;
+    uint contractBalance;
 
     struct MarketplaceItem {
         uint nftId;
@@ -59,12 +60,25 @@ contract NFTMarketplace {
         _items.increment();
     }
 
+    function withdraw() external {
+        require(msg.sender == owner, "You are not an owner");
+
+        contractBalance = 0;
+
+        payable(msg.sender).transfer(contractBalance);
+    }
+
     function buy(uint id) external payable{
         require(msg.value == idToMarketplaceItem[id].price, "Price must be equal to listing price");
 
         idToMarketplaceItem[id].buyer = msg.sender;
         idToMarketplaceItem[id].sold = true;
 
+        uint256 commission = msg.value * 5 / 100;
+        uint256 sellerAmount = msg.value - commission;
+        contractBalance += commission;
+
+        payable(idToMarketplaceItem[id].seller).transfer(sellerAmount);
         mytoken.transferFrom(address(this), msg.sender, idToMarketplaceItem[id].nftId);
     }
 
@@ -113,6 +127,26 @@ contract NFTMarketplace {
 
     function getTokenURI(uint tokenId) external view returns(string memory) {
         return mytoken.tokenURI(tokenId);
+    }
+
+    
+    function getUserItems(address user) public view returns (uint256[] memory) {
+        uint i = 0;
+        uint[] memory userIds = new uint[](_items.current());
+
+        for(uint id = 0; id < _items.current(); id++){
+            if(mytoken.ownerOf(id) == user) {
+                userIds[i] = id;
+                i++;
+            }
+        }
+
+        uint[] memory result = new uint[](i);
+        for (uint j = 0; j < i; j++) {
+            result[j] = userIds[j];
+        }
+
+        return result;
     }
 
 
