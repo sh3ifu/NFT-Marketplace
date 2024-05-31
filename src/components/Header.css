@@ -12,14 +12,21 @@ h1 {
   color: #00e8c6;
 }
 
-#myNFTButton, #marketButton {
-  cursor: pointer;
-  margin-right: 25px;
-  border: none;
-  background-color: #181a1b;
-  color: #00e8c6;
-  font-size: 1.35rem;
-  font-weight: 700;
+.ant-radio-button-wrapper {
+  background-color: #2e323d !important;
+  border-color: #2e323d !important;
+  color: #00e8c6 !important;
+  font-size: 1.35rem !important;
+  font-weight: 700 !important;    
+  height: 48px;
+  line-height: 48px;
+  padding: 0 16px;
+}
+
+.ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {  
+  color: #00e8c6 !important;
+  background-color: #595E60 !important;
+  border-color: #595E60 !important;
 }
 
 .leftBlock {

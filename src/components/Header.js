@@ -1,6 +1,6 @@
 import jsonData from "./deployedContractsAddresses.json";
 import axios from 'axios';
-import { Modal } from "antd";
+import { Modal, Flex, Radio } from "antd";
 import { ethers } from "ethers";
 import { useState, useEffect } from 'react';
 import './Header.css';
@@ -194,8 +194,12 @@ function Header({ onNewNft, setView }) {
                 <h1>NFT Marketplace</h1>
             </div>
             <div className="middleBlock">
-                <button id='marketButton' onClick={() => setView('Market')}>Market</button>
-                <button id='myNFTButton' onClick={() => setView('My NFT')}>My NFT</button>
+                <Flex vertical gap="middle">
+                    <Radio.Group defaultValue="a" buttonStyle="solid">
+                        <Radio.Button value="a" onClick={() => setView('Market')}>Market</Radio.Button>
+                        <Radio.Button value="b" onClick={() => setView('My NFT')}>My NFT</Radio.Button>                        
+                    </Radio.Group>
+                </Flex>
             </div>
             <div className="rightButtons">
                 <button className="connectBtn" onClick={() => openModal(1)}>Create</button>                
