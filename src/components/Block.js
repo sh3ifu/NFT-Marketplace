@@ -16,7 +16,7 @@ function Block(props) {
     const [isOpenAdditionalModal, setIsOpenAdditionalModal] = useState(false);
     const [isOpenProcessModal, setIsOpenProcessModal] = useState(false);
     const [isOpenFailedModal, setIsOpenFailedModal] = useState(false);
-    const [isOpenCompletedModal, setIsOpenCompletedModal] = useState(false);
+    const [isOpenCompletedModal, setIsOpenCompletedModal] = useState(false);    
 
     function truncateDescription(description, maxLength) {
         if (description.length > maxLength) {
@@ -54,48 +54,64 @@ function Block(props) {
 
     return(
         <>
-        <Modal open={isOpenProcessModal} footer={null} onCancel={() => setIsOpen(setIsOpenProcessModal)} className="processing-modal">
-            <div className="processing">
-                <div id="processing">
-                    <img id="loadingImg" src={Loading}></img>
-                    <p>Processing...</p>
+            <Modal open={isOpenProcessModal} footer={null} onCancel={() => setIsOpen(setIsOpenProcessModal)} className="processing-modal">
+                <div className="processing">
+                    <div id="processing">
+                        <img id="loadingImg" src={Loading}></img>
+                        <p>Processing...</p>
+                    </div>
+                    <p id="processMessage">Initializing transaction...</p>
                 </div>
-                <p id="processMessage">Initializing transaction...</p>
-            </div>
-        </Modal>
-        <Modal open={isOpenFailedModal} footer={null} onCancel={() => setIsOpen(setIsOpenFailedModal)} className="failed-modal">
-            <div className="failed">
-                <img id="failedImg" src={Failed}></img>
-                <p id="failedMessage">Buying failed...</p>
-            </div>
-        </Modal>
-        <Modal open={isOpenCompletedModal} footer={null} onCancel={() => setIsOpen(setIsOpenCompletedModal)} className="completed-modal">
-            <div className="completed">
-                <img id="completedImg" src={Completed}></img>
-                <p id="completedMessage">Buying completed</p>
-            </div>
-        </Modal>
-        <Modal open={isOpenAdditionalModal} footer={null} onCancel={() => setIsOpen(setIsOpenAdditionalModal)} title="NFT Info" className="additional-modal">
-            <div className="additional">
-                
-            </div>
-        </Modal>
-        
-        <div className="block" onClick={handleClick}>            
-            <img src={props.imageUrl}></img>
-            <div className='nftInfo'>
-                <p id="tokenId">Token ID #{props.tokenID}</p>
-                <p id="tokenName">{props.name}</p>
-                <p id="description">{truncateDescription(props.description, 80)}</p>
-            </div>
-            {props.view === 'Market' && (
-                <div className="bottomBlock">                
-                    <p id='tokenPrice'>{props.price} ETH</p>
-                    <button className='buyButton' onClick={handleBuyClick}>Buy</button>
+            </Modal>
+            <Modal open={isOpenFailedModal} footer={null} onCancel={() => setIsOpen(setIsOpenFailedModal)} className="failed-modal">
+                <div className="failed">
+                    <img id="failedImg" src={Failed}></img>
+                    <p id="failedMessage">Buying failed...</p>
                 </div>
-            )}
-        </div>
-        </>
+            </Modal>
+            <Modal open={isOpenCompletedModal} footer={null} onCancel={() => setIsOpen(setIsOpenCompletedModal)} className="completed-modal">
+                <div className="completed">
+                    <img id="completedImg" src={Completed}></img>
+                    <p id="completedMessage">Buying completed</p>
+                </div>
+            </Modal>
+            <Modal open={isOpenAdditionalModal} footer={null} onCancel={() => setIsOpen(setIsOpenAdditionalModal)} title="NFT Info" className="additional-modal">
+                <div className="additional">
+                    <div className="topInfo">
+                        <img src={props.imageUrl} id="nftImg"></img>
+                        <p id="nftId">Token ID #{props.tokenID}</p>
+                    </div>
+                    <p id="nftName">{props.name}</p>
+                    <p id="nftDescription">{props.description}</p>
+                    <div className="bottomInfo">
+                        <div className="sellerInfo">
+                            <p id="sellerAddressP"><strong>Seller address</strong></p>
+                            <p id="sellerAddress">{props.sellerAddress}</p>
+                        </div>
+                        <div className="priceInfo">
+                            <p id="nftPriceP"><strong>Price</strong></p>
+                            <p id="nftPrice">{props.price} ETH</p>
+                        </div>
+                    </div>
+                </div>
+            </Modal>
+
+
+            <div className="block" onClick={handleClick}>            
+                <img src={props.imageUrl}></img>
+                <div className='nftInfo'>
+                    <p id="tokenId">Token ID #{props.tokenID}</p>
+                    <p id="tokenName">{props.name}</p>
+                    <p id="description">{truncateDescription(props.description, 80)}</p>
+                </div>
+                {props.view === 'Market' && (
+                    <div className="bottomBlock">                
+                        <p id='tokenPrice'>{props.price} ETH</p>
+                        <button className='buyButton' onClick={handleBuyClick}>Buy</button>
+                    </div>
+                )}
+            </div>
+        </>        
     );    
 }
 

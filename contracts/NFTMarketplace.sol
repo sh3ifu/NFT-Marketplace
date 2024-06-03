@@ -1,11 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
-// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
-// import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-// import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./MyToken.sol";
@@ -29,6 +24,8 @@ contract NFTMarketplace {
 
     mapping(uint256 => MarketplaceItem) private idToMarketplaceItem;
 
+    event Mint(uint tokenId, uint price, address seller);
+    event Buy(uint tokenId, uint price, address buyer);
 
     constructor() {
         mytoken = new MyToken(address(this));
@@ -57,6 +54,7 @@ contract NFTMarketplace {
             false
         );
 
+        emit Mint(_items.current(), price, msg.sender);
         _items.increment();
     }
 
@@ -80,6 +78,8 @@ contract NFTMarketplace {
 
         payable(idToMarketplaceItem[id].seller).transfer(sellerAmount);
         mytoken.transferFrom(address(this), msg.sender, idToMarketplaceItem[id].nftId);
+
+        emit Buy(id, msg.value, msg.sender);
     }
 
     function getUnsoldItems() external view returns(uint[] memory) {
@@ -107,6 +107,10 @@ contract NFTMarketplace {
 
     function getPrice(uint id) external view returns(uint) {
         return idToMarketplaceItem[id].price;
+    }
+
+    function getSellerAddress(uint id) external view returns(address) {
+        return idToMarketplaceItem[id].seller;
     }
 
     function getBalanceOf(address _owner) external view returns(uint) {

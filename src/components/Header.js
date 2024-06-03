@@ -17,7 +17,7 @@ const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
 
 
 function Header({ onNewNft, setView }) {
-    const defaultImageURL = 'https://crimson-cheerful-eagle-290.mypinata.cloud/ipfs/bafybeiddt7fzfxjgort2s7tpue576p2fogr3a5aiu7qfjbdllaqajjprhu';
+    const defaultImageURL = 'https://crimson-cheerful-eagle-290.mypinata.cloud/ipfs/QmWmUTrHfE3nuCVczSrn1kfZ1gcNLWnmUYgWAJewE7HKqn';
     const [account, setAccount] = useState(null);
     const [provider, setProvider] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -50,8 +50,9 @@ function Header({ onNewNft, setView }) {
 
 
     useEffect(() => {
-        if(checkMetamask()) 
-            window.ethereum.on('accountsChanged', handleAccountsChanged);        
+        if(checkMetamask()) {
+            window.ethereum.on('accountsChanged', handleAccountsChanged);            
+        }
 
         return () => {
             // Remove the event handler when the component is unmounted
@@ -144,9 +145,9 @@ function Header({ onNewNft, setView }) {
             setIsUploading(false);
             setIsOpen(false);
             await contract.mintToken(convertedPrice, metadataURL);
+            onNewNft();
             setIsOpenProcessModal(false);
             setIsOpenCompletedModal(true);
-            onNewNft();
         } catch(err) {
             setIsOpen(false);
             setIsOpenProcessModal(false);
@@ -171,10 +172,14 @@ function Header({ onNewNft, setView }) {
         }
     }
 
-    // Account change event handler
     function handleAccountsChanged(accounts) {
-        const shortAddress = accounts[0].slice(0, 4) + '...' + accounts[0].slice(-3);
-        setAccount(shortAddress);
+        try {
+            const shortAddress = accounts[0].slice(0, 4) + '...' + accounts[0].slice(-3);
+            setAccount(shortAddress);
+        } catch(err) {
+            setAccount('Connect');
+            console.log(err);
+        }
     }
 
     function checkMetamask() {
@@ -206,7 +211,7 @@ function Header({ onNewNft, setView }) {
                 </div>
                 <div className="inputDescription">
                     <label>Description:</label>
-                    <textarea id="inputDescription" value={description} placeholder="Description" onChange={handleDescriptionChange} />
+                    <textarea id="inputDescription" value={description} placeholder="Description" maxLength="600" onChange={handleDescriptionChange} />
                 </div>
                 <div className="inputPrice">
                     <label>Price (ETH):</label>
