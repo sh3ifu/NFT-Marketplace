@@ -11,7 +11,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { DownOutlined} from '@ant-design/icons';
 
 const nftMarketplaceAddress = jsonData.NFTMarketplaceAddress;
-const deploymentPrivateKey = jsonData.deploymentPrivateKey;
+const deploymentPrivateKey = process.env.REACT_APP_DEPLOYMENT_PRIVATE_KEY;
+// const deploymentPrivateKey = 'f7e4ffaa0952bd30ae920007618c6aa3bdef186446d9778087cb2b08f09c4d32';
 
 function MainArea({ view, newNftAdded }) {
     const [nfts, setNfts] = useState([]);
@@ -19,15 +20,28 @@ function MainArea({ view, newNftAdded }) {
     
     const fetchData = useCallback(async () => {
         console.log('fetchData called');
-    
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const wallet = new ethers.Wallet(deploymentPrivateKey, provider);
-    
+        
+        let provider;
+        let wallet;
+        try {
+            provider = new ethers.BrowserProvider(window.ethereum);
+            wallet = new ethers.Wallet(deploymentPrivateKey, provider);
+        } catch(err) {
+            alert('Please connect to Metamask network Sepolia');
+            console.log(err);
+            return;
+        }
         const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
     
         let nftIds = [];
         if (view === 'Market') {
-            nftIds = await getUnsoldNftIds(wallet);
+            try {
+                nftIds = await getUnsoldNftIds(wallet);
+            } catch(err) {
+                alert('Switch network to Sepolia');
+                console.log(err);
+                return;
+            }
         } else if (view === 'My NFT') {
             let signer = null;
             try {
@@ -37,10 +51,16 @@ function MainArea({ view, newNftAdded }) {
                 console.log(err);
                 return;
             }
-            nftIds = await contract.getUserItems(signer.address);
+            try{
+                nftIds = await contract.getUserItems(signer.address);
+            } catch(err) {
+                alert('Switch network to Sepolia');
+                console.log(err);
+                return;
+            }
         }
     
-        console.log('NFT IDs:', nftIds);
+        // console.log('NFT IDs:', nftIds);
     
         const nftData = [];
     
@@ -49,8 +69,15 @@ function MainArea({ view, newNftAdded }) {
             const tokenURI = await contract.getTokenURI(tokenID);
             const price = await contract.getPrice(tokenID);
             const sellerAddress = await contract.getSellerAddress(tokenID);
-    
-            const response = await axios.get(tokenURI);
+            
+            let response = '';
+            try {
+                response = await axios.get(tokenURI);
+            } catch(err) {
+                alert('Error loading NFT. Please disable your ad blocker and refresh page.');                
+                console.log(err);
+                return;
+            }
             const jsonData = response.data;
             const imageUrl = jsonData.image;
             const name = jsonData.name;
@@ -80,8 +107,16 @@ function MainArea({ view, newNftAdded }) {
     }, [view, newNftAdded, debouncedFetchData]);
 
     useEffect(() => {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const wallet = new ethers.Wallet(deploymentPrivateKey, provider);
+        let provider;
+        let wallet;
+        try {
+            provider = new ethers.BrowserProvider(window.ethereum);
+            wallet = new ethers.Wallet(deploymentPrivateKey, provider);
+        } catch(err) {
+            alert('Please connect to Metamask network Sepolia');
+            console.log(err);
+            return;
+        }
         const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
 
         const handleMint = (tokenId, price, seller) => {
@@ -105,10 +140,17 @@ function MainArea({ view, newNftAdded }) {
     }, [fetchData]);
 
     async function getUnsoldNftIds(wallet) {
-        const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
-        let nftIds = await contract.getUnsoldItems();
-        nftIds = Array.from(nftIds).map(item => parseInt(item));
-        return nftIds;
+        let nftIds = [];
+        try {
+            const contract = new ethers.Contract(nftMarketplaceAddress, NFTMarketplace.abi, wallet);
+            nftIds = await contract.getUnsoldItems();
+            nftIds = Array.from(nftIds).map(item => parseInt(item));
+            return nftIds;
+        } catch(err) {
+            console.log(err);
+            alert('Please connect to Metamask network Sepolia');
+            return;
+        }        
     }
 
     const handleMenuClick = (e) => {
