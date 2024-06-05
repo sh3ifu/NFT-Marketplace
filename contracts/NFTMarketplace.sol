@@ -152,23 +152,5 @@ contract NFTMarketplace {
 
         return result;
     }
-
-
-    // Fucking Metamask!!!
-    fallback() external payable {
-        // console.log("----- fallback:", msg.value);
-    }
-
-    receive() external payable {
-        // console.log("----- receive:", msg.value);
-    }
-
-    function supportsInterface(bytes4 interfaceID) external pure returns (bool) {
-        return interfaceID == type(IERC721).interfaceId;
-    }
-
-    function decimals() public pure returns (uint8) {
-        return 18;
-    }
 }
 
